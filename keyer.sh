@@ -26,20 +26,20 @@ conv_args="-delay $long_delay $keyup_pic"
 for (( i=0; i<${#phrase}; i++ )); do
     char=${phrase:$i:1}
     if [ 0 -eq ${#map[$char]} ]; then
-	conv_args="$conv_args ( -delay $word_delay $keyup_pic ) "
+	conv_args="$conv_args ( -delay $word_delay -clone 0 ) "
     fi
     for (( j=0; j<${#map[$char]}; j++ )); do
 	symbol=${map[$char]:$j:1}
 	if [ ${symbol}x == "sx" ]; then
-	    conv_args="$conv_args ( -delay $short_delay $keydown_pic -delay $short_delay $keyup_pic )"
+	    conv_args="$conv_args ( -delay $short_delay $keydown_pic "
 	elif [ ${symbol}x == "lx" ]; then
-	    conv_args="$conv_args ( -delay $long_delay $keydown_pic -delay $short_delay $keyup_pic )"
+	    conv_args="$conv_args ( -delay $long_delay $keydown_pic "
 	fi
 	if [ ${j} == $(expr ${#map[$char]} - 1) ]; then
-	     conv_args="$conv_args ( -delay $long_delay $keyup_pic ) "
+	     conv_args="$conv_args -delay $long_delay -clone 0 )"
 	else
-	     conv_args="$conv_args ( -delay $short_delay $keyup_pic ) "
+	     conv_args="$conv_args -delay $short_delay -clone 0 )"
 	fi
     done
 done
-convert -loop 1 $conv_args -coalesce -layers RemoveDups output.gif
+convert -loop 1 $conv_args -layers Optimize output.gif
