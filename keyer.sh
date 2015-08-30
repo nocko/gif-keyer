@@ -22,7 +22,7 @@ map=([a]=sl [b]=lsss [c]=lsls [d]=lss [e]=s [f]=ssls [g]=lls \
 	[t]=l [u]=ssl [v]=sssl [w]=sll [x]=lssl [y]=lsll \
 	[z]=llss)
 
-conv_args="$keyup_pic -delay $long_delay"
+conv_args="-delay $long_delay $keyup_pic"
 for (( i=0; i<${#phrase}; i++ )); do
     char=${phrase:$i:1}
     if [ 0 -eq ${#map[$char]} ]; then
@@ -42,4 +42,4 @@ for (( i=0; i<${#phrase}; i++ )); do
 	fi
     done
 done
-convert -loop 1 $conv_args output.gif
+convert -loop 1 $conv_args -coalesce -layers RemoveDups output.gif
