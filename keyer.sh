@@ -9,7 +9,7 @@ if [ ${#@} -ne 2 ]; then
 fi
 
 wpm=$1
-phrase=$2
+phrase=$(echo $2 |tr '[:upper:]' '[:lower:]')
 
 short_delay=$(( 6000 / (50 * $wpm)  ))
 long_delay=$(( $short_delay*3 ))
