@@ -24,7 +24,7 @@ Public Domain
 
 1. `docker run -p 8080:8080 nocko/gif-keyer`
 
-- or -
+*or*
 
 1. `docker build -t gif-keyer .`
 2. `docker run -p 8080:8080 gif-keyer`

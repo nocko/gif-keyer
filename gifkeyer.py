@@ -1,14 +1,14 @@
 import os
 
 from twisted.application import service, internet
-from twisted.internet import utils
+from twisted.internet import utils, defer
 from twisted.web import proxy
 from twisted.web.server import Site, NOT_DONE_YET
 from twisted.web.resource import Resource, NoResource
 
 KEYER_SCRIPT='/'.join(['/home',os.environ['APPNAME'],'keyer.sh'])
 
-print KEYER_SCRIPT
+sem = defer.DeferredSemaphore(2)
 
 class GIFResource(Resource):
     def getChild(self, name, request):
@@ -33,8 +33,12 @@ class GIFResource(Resource):
             print f
             request.setResponseCode(400)
             request.finish()
-        d = utils.getProcessOutput(
-            KEYER_SCRIPT, args=['13',self.name], env={'KEYER_STDOUT': 'yes'} )
+        def _run_proc():
+            return utils.getProcessOutput(
+                KEYER_SCRIPT,
+                args=['13',self.name],
+                env={'KEYER_STDOUT': 'yes'})
+        d = sem.run(_run_proc)
         d.addCallbacks(_write, _error)
         return NOT_DONE_YET
 
