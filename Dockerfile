@@ -1,4 +1,4 @@
-FROM python:2
+FROM pypy:2
 MAINTAINER Shawn Nock <nock@nocko.se>
 
 ENV APPNAME gifkeyer
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 RUN useradd -m $APPNAME
 WORKDIR /home/$APPNAME
 COPY ./requirements.txt ./
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt && mkdir ./gifs && chown $APPNAME ./gifs
 
 COPY . ./
 CMD exec gosu $APPNAME twistd -n -y $APPNAME.py
