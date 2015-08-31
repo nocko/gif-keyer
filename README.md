@@ -5,10 +5,10 @@ https://twitter.com/mjg59/status/637878696536227840
 
 ## Requirements
 
-Bash 4.x
-ImageMagick
-Twisted [Optional for web svc.]
-Docker [Optional of easy web svc. deploy]
+ - Bash 4.x
+ - ImageMagick
+ - Twisted [Optional for web svc.]
+ - Docker [Optional of easy web svc. deploy]
 
 ## Basic Usage
 
@@ -22,12 +22,12 @@ Public Domain
 
 ### With Docker
 
-1. docker run -p 8080:8080 nocko/gif-keyer
+1. `docker run -p 8080:8080 nocko/gif-keyer`
 
 - or -
 
-1. docker build -t gif-keyer .
-2. docker run -p 8080:8080 gif-keyer
+1. `docker build -t gif-keyer .`
+2. `docker run -p 8080:8080 gif-keyer`
 
 ### Without Docker
 
@@ -36,4 +36,4 @@ Public Domain
 
 ### Web Service Usage
 
-http://<host or ip>/<any word or phrase>.gif
+`wget http://<host or ip>/<any word or phrase>.gif`
