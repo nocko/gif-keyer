@@ -42,4 +42,9 @@ for (( i=0; i<${#phrase}; i++ )); do
 	fi
     done
 done
-convert -loop 1 $conv_args output.gif
+if [ ! -z $KEYER_STDOUT ]; then
+    outfile="gif:-"
+else
+    outfile=output.gif
+fi
+exec convert -loop 1 $conv_args $outfile
