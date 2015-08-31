@@ -20,13 +20,15 @@ map=([a]=.- [b]=-... [c]=-.-. [d]=-.. [e]=. [f]=..-. [g]=--. \
 	[h]=.... [i]=.. [j]=.--- [k]=-.- [l]=.-.. [m]=-- \
 	[n]=-. [o]=--- [p]=.--. [q]=--.- [r]=.-. [s]=... \
 	[t]=- [u]=..- [v]=...- [w]=.-- [x]=-..- [y]=-.-- \
-	[z]=--..)
+	[z]=--.. [0]=----- [1]=.---- [2]=..--- [3]=...-- \
+	[4]=....- [5]=..... [6]=-.... [7]=--... [8]=---.. \
+	[9]=----.)
 
 conv_args="-dispose none -delay 0 $keyup_pic"
 for (( i=0; i<${#phrase}; i++ )); do
     char=${phrase:$i:1}
     if [ -z ${map[$char]} ]; then
-	conv_args="$conv_args ( -delay $word_delay placeholder.png ) "
+ 	conv_args="$conv_args ( -delay $word_delay placeholder.png ) "
     fi
     for (( j=0; j<${#map[$char]}; j++ )); do
 	symbol=${map[$char]:$j:1}
@@ -48,5 +50,6 @@ if [ ! -z "$KEYER_STDOUT" ]; then
     exec cat "gifs/$KEYER_STDOUT"
 else
     outfile=output.gif
+    convert -loop 1 $conv_args $outfile
 fi
 
