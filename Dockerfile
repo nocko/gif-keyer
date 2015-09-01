@@ -16,7 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 RUN useradd -m $APPNAME
 WORKDIR /home/$APPNAME
 COPY ./requirements.txt ./
-RUN pip install -r requirements.txt && mkdir ./gifs && chown $APPNAME ./gifs
+RUN pip install -r requirements.txt && mkdir ./gifs ./public && chown $APPNAME ./gifs && chown $APPNAME ./public
 
-COPY . ./
+ENV KEYDOWN_PIC keydown.jpg
+ENV KEYUP_PIC keyup.jpg
+COPY keyer.sh gifkeyer.py $KEYDOWN_PIC $KEYUP_PIC placeholder.png cache-source-images.sh ./
+COPY public/* ./public/
+RUN gosu $APPNAME ./cache-source-images.sh
+
 CMD exec gosu $APPNAME twistd -n -y $APPNAME.py

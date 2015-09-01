@@ -1,0 +1,20 @@
+<h1>GIF-Keyer</h1>
+
+<form action="#">
+  <label>Text to render:</label>
+  <input id="phrase"></input>
+  <label>Words per Minute:</label>
+  <input id="wpm"></input>
+  <input type="submit" id="submitButton"></input>
+</form>
+
+<script>
+  var gk = {};
+  gk.button = document.getElementById('submitButton');
+  gk.phrase = document.getElementById('phrase');
+  gk.wpm = document.getElementById('wpm');
+  gk.button.addEventListener("click", function () {
+    document.location = "/"+gk.phrase.value+".gif?wpm="+gk.wpm.value;
+  });
+</script>
+	

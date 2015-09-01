@@ -1,19 +1,47 @@
 #!/bin/bash
 
-keyup_pic=keyup.jpg
-keydown_pic=keydown.jpg
-
-if [ ${#@} -ne 2 ]; then
-    echo "Usage: keyer.sh <WPM> \"<phrase>\""
-    exit 1
+if [ -z "$KEYUP_PIC" ]; then
+    keyup_pic=keyup.jpg
+else
+    keyup_pic=$KEYUP_PIC
+fi
+if [ -z "$KEYDOWN_PIC" ]; then
+    keydown_pic=${KEYUP_PIC%.*}.mpc
+else
+    keydown_pic=keydown.jpg
 fi
 
-wpm=$1
-phrase=$(echo $2 |tr '[:upper:]' '[:lower:]')
+# if [ ${#@} -lt 1 ]; then
+#     >&2 echo "Usage: keyer.sh \"<phrase>\" [output.gif]"
+#     exit
+# fi
 
-short_delay=$(( 6000 / (50 * $wpm)  ))
+if [ -z "$KEYER_WPM" ]; then
+    KEYER_WPM="13"
+fi
+if [ -z "$KEYER_OUTPUT" ]; then
+    if [ ! -z "$2" ]; then
+	KEYER_OUTPUT=$2
+    else
+	KEYER_OUTPUT=output.gif
+    fi
+fi
+
+phrase=$(echo $1 |tr '[:upper:]' '[:lower:]')
+
+short_delay=$(( 6000 / (50 * $KEYER_WPM)  ))
 long_delay=$(( $short_delay*3 ))
 word_delay=$(( $short_delay*7 ))
+
+if [ ! -z "$KEYER_DEBUG" ]; then
+    (
+	echo "WPM: $KEYER_WPM"
+	echo "Dit: $short_delay"
+	echo "Dah: $long_delay"
+	echo "Break: $word_delay"
+	echo "Phrase: $phrase"
+    ) >&2 
+fi
 
 declare -A map
 map=([a]=.- [b]=-... [c]=-.-. [d]=-.. [e]=. [f]=..-. [g]=--. \
@@ -24,7 +52,7 @@ map=([a]=.- [b]=-... [c]=-.-. [d]=-.. [e]=. [f]=..-. [g]=--. \
 	[4]=....- [5]=..... [6]=-.... [7]=--... [8]=---.. \
 	[9]=----.)
 
-conv_args="-dispose none -delay 0 $keyup_pic"
+conv_args="convert -limit map 8 -limit memory 8 -loop 1 -dispose none -delay 0 $keyup_pic"
 for (( i=0; i<${#phrase}; i++ )); do
     char=${phrase:$i:1}
     if [ -z ${map[$char]} ]; then
@@ -44,12 +72,15 @@ for (( i=0; i<${#phrase}; i++ )); do
 	fi
     done
 done
-if [ ! -z "$KEYER_STDOUT" ]; then
-    outfile="gif:-"
-    convert -loop 1 $conv_args "gifs/$KEYER_STDOUT"
-    exec cat "gifs/$KEYER_STDOUT"
-else
-    outfile=output.gif
-    convert -loop 1 $conv_args $outfile
-fi
 
+if [ ! -z "$KEYER_WEB" ]; then
+    # In 'web mode' we output to stdout and cache file
+    if [ ! -d gifs/$KEYER_WPM ]; then
+	mkdir -p gifs/$KEYER_WPM
+    fi
+    conv_args="$conv_args gif:-"
+    exec $conv_args | tee "gifs/$KEYER_WPM/$KEYER_OUTPUT"
+else
+    conv_args="$conv_args $KEYER_OUTPUT"
+    exec $conv_args
+fi
