@@ -46,7 +46,7 @@ Public Domain, attribution appreciated
 
 ### Web Service Usage
 
-Browse to http://<host or ip>:<port>/ and fill out form
+Browse to `http://<host or ip>:<port>/` and fill out form
 
 *or*
 
