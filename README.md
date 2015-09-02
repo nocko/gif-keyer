@@ -12,11 +12,21 @@ https://twitter.com/mjg59/status/637878696536227840
 
 ## Basic Usage
 
-`./keyer.sh <WPM> "<phrase to key>"`
+`./keyer.sh "<phrase to key>"`
 
+## Advanced Usage
+
+###Change Speed:
+
+`KEYER_WPM=5 ./keyer.sh "<phrase to key>"`
+       
+####Change Key Down/Up image:
+
+`KEYUP_PIC=keyup.jpg ./keyer.sh "<phrase to key>"`
+       
 ## License:
 
-Public Domain
+Public Domain, attribution appreciated
 
 ## Web Service:
 
@@ -36,4 +46,9 @@ Public Domain
 
 ### Web Service Usage
 
+Browse to http://<host or ip>:<port>/ and fill out form
+
+*or*
+
 `wget http://<host or ip>/<any word or phrase>.gif`
+`wget http://<host or ip>/<any word or phrase>.gif?wpm=13`
