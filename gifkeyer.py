@@ -11,18 +11,22 @@ from twisted.web.resource import Resource, NoResource
 KEYER_SCRIPT='/'.join(['/home',os.environ['APPNAME'],'keyer.sh'])
 PROC_LIMIT=2
 DEFAULT_WPM='13'
-MAX_MEM=100 # IN MB concurrent usage by ImageMagick
-PER_PROC_MEM=str(MAX_MEM//PROC_LIMIT)+'MB'
+
+# Should we kill rendering requested gif if the client disappears, or
+# continue to feed cache?
+KILL_CANCELLED = False
 
 sem = defer.DeferredSemaphore(PROC_LIMIT)
 
 class GIFKeyerProtocol(protocol.ProcessProtocol):
     def __init__(self, request):
         self.request = request
+        self.cancelled = False
         self.request.setHeader("Content-Type", "image/gif")
 
     def outReceived(self, data):
-        self.request.write(data)
+        if not self.cancelled:
+            self.request.write(data)
 
     def errReceived(self, data):
         log.msg("errRx: {}".format(data)) 
@@ -32,7 +36,7 @@ class GIFKeyerProtocol(protocol.ProcessProtocol):
         if rc == 0:
             self.deferred.callback(self)
         else:
-            self.deferred.errback(rc)
+            self.deferred.errback(rc, self)
     
 class GIFResource(Resource):
     def _cache_path(self):
@@ -49,11 +53,19 @@ class GIFResource(Resource):
         return File("public/"+name)
     
     def render_GET(self, request):
-        def _finished(proto_inst):
-            request.finish()
-        def _error(f):
+        def _finished(proto):
+            if not proto.cancelled:
+                request.finish()
+        def _error(f, proto):
             log.msg("Error: {}".format(f))
-            request.finish()
+            if not proto.cancelled:
+                request.finish()
+        def _cancel(f, proto):
+            proto.cancelled = True
+            if KILL_CANCELLED:
+                proto.transport.signalProcess('KILL')
+                if os.path.isfile(self.path):
+                    os.remove(self.path)
         def _run_proc():
             proto = GIFKeyerProtocol(request)
             proto.deferred = defer.Deferred()
@@ -61,14 +73,13 @@ class GIFResource(Resource):
                  'KEYER_OUTPUT': self.name,
                  'KEYER_WPM': self.wpm,
                  'LC_ALL': 'C',
-                 'MAGICK_MEMORY_LIMIT': PER_PROC_MEM,
-                 'MAGICK_MEMORY_MAP': PER_PROC_MEM,
                  'KEYUP_PIC': os.environ['KEYUP_PIC'],
                  'KEYDOWN_PIC': os.environ['KEYDOWN_PIC']}
-            reactor.spawnProcess(
+            proc = reactor.spawnProcess(
                 proto, KEYER_SCRIPT,
                 args=['keyer.sh', self.name[:-4]],
                 env=env)
+            request.notifyFinish().addErrback(_cancel, proto)
             return proto.deferred
         d = sem.run(_run_proc)
         d.addCallbacks(_finished,_error)

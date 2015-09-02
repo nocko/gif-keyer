@@ -1,20 +1,67 @@
-<h1>GIF-Keyer</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GIF Keyer</title>
+<link rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link href="cover.css" rel="stylesheet">
 
-<form action="#">
-  <label>Text to render:</label>
-  <input id="phrase"></input>
-  <label>Words per Minute:</label>
-  <input id="wpm"></input>
-  <input type="submit" id="submitButton"></input>
-</form>
+</head>
+<body>
+  <div class="site-wrapper">
 
-<script>
-  var gk = {};
-  gk.button = document.getElementById('submitButton');
-  gk.phrase = document.getElementById('phrase');
-  gk.wpm = document.getElementById('wpm');
-  gk.button.addEventListener("click", function () {
-    document.location = "/"+gk.phrase.value+".gif?wpm="+gk.wpm.value;
-  });
-</script>
-	
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand"></h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li class="active"><a href="#">Home</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h1 class="cover-heading">GIF Keyer</h1>
+            <p class="lead">The text to GIF straight-key animation
+            tool for which you've been looking.</p>
+          </div>
+	  <div>
+	    <form class="form-horizontal" action="#">
+	      <div class="form-group has-feedback" id="phraseGroup">
+		<label class="control-label" for="phrase">Text to render:</label>
+		<input type="text" id="phrase" class="form-control"
+		       placeholder="Word/phrase/call to animate"
+		       aria-describedby="errorStatus">
+		<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+		<span class="control-label" id="errorStatus"></span>
+	      </div>
+	      <div class="form-group">
+		<label class="control-label" for="wpm">Words per Minute:</label>
+		<input type="number" class="form-control" placeholder="13" id="wpm">
+	      </div>
+	      <input type="submit" id="submitButton" class="btn btn-default" ></input>
+	    </form>
+	  </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>	
